@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Recommendation Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .preview, .recommendations { margin-top: 20px; }
+    img { max-width: 150px; margin: 5px; border: 1px solid #ccc; padding: 4px; }
+    .item { display: inline-block; text-align: center; margin: 10px; }
+    .price { font-weight: bold; color: green; }
+  </style>
+</head>
+<body>
+  <h1>Image Recommendation Demo</h1>
+
+  <form id="uploadForm">
+    <input type="file" name="file" accept="image/*" required>
+    <button type="submit">Upload &amp; Recommend</button>
+  </form>
+
+  <div class="preview">
+    <h3>Uploaded Image:</h3>
+    <img id="uploadedImg" src="" alt="" style="display:none;">
+  </div>
+
+  <div class="recommendations">
+    <h3>Recommended Images:</h3>
+    <div id="recommendationsList"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const uploadedImg = document.getElementById('uploadedImg');
+    const recList = document.getElementById('recommendationsList');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      recList.innerHTML = '';
+      uploadedImg.style.display = 'none';
+
+      const res = await fetch('/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+
+      // Show uploaded image
+      uploadedImg.src = data.uploaded_image;
+      uploadedImg.style.display = 'block';
+
+      // Show recommendations with price
+      recList.innerHTML = '';
+      data.recommendations.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <img src="${item.image}" alt="${item.title}">
+          <p>${item.title}</p>
+          <p class="price">Price: ${item.price}</p>
+        `;
+        recList.appendChild(div);
+      });
+    });
+  </script>
+</body>
+</html>

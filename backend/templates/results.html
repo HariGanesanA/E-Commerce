@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Recommendations</title>
+</head>
+<body>
+  <h1>Recommended Products</h1>
+  <p>Based on: <strong>{{ uploaded }}</strong></p>
+  <div style="display:flex;flex-wrap:wrap;">
+    {% for item in items %}
+      <div style="margin:10px;text-align:center;">
+        <img src="{{ url_for('static', filename=item.image_path) }}" alt="" width="200"><br>
+        <strong>${{ item.price }}</strong><br>
+        <small>{{ item.title }}</small>
+      </div>
+    {% endfor %}
+  </div>
+  <p><a href="/">Try another</a></p>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Recommendation</title>
+    <style>
+        img { max-width: 200px; margin: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h2>Upload Image for Recommendation</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadImage()">Upload</button>
+
+    <h3>Uploaded Image:</h3>
+    <div id="uploaded"></div>
+
+    <h3>Recommended Images:</h3>
+    <div id="recommendations"></div>
+
+    <script>
+        async function uploadImage() {
+            const fileInput = document.getElementById('fileInput');
+            if(fileInput.files.length === 0) {
+                alert("Please select an image");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const res = await fetch('http://127.0.0.1:5000/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await res.json();
+
+            // Show uploaded image
+            document.getElementById("uploaded").innerHTML =
+                `<img src="http://127.0.0.1:5000${data.uploaded_image}" alt="Uploaded Image">`;
+
+            // Show recommended images
+            let recDiv = document.getElementById("recommendations");
+            recDiv.innerHTML = '';
+            data.recommendations.forEach(imgPath => {
+                recDiv.innerHTML += `<img src="http://127.0.0.1:5000/${imgPath}" alt="Recommendation">`;
+            });
+        }
+    </script>
+</body>
+</html>
+
+
